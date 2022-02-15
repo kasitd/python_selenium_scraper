@@ -65,12 +65,13 @@ class Pracuj(webdriver.Chrome):
         remote = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="search-filters"]/div[1]/div/ul/li[5]/div/div[2]/ul/li[3]')))
         remote.click()
 
+    # zmienione na 'stażysta' ze względu na testy
     def select_job_levels(self):
         word_levels = self.find_element(By.XPATH, '//*[@id="search-filters"]/div[1]/div/ul/li[2]')
         word_levels.click()
 
     def select_junior_specialist_jobs(self):
-        junior_jobs = self.find_element(By.XPATH, '//*[@id="search-filters"]/div[1]/div/ul/li[2]/div/div[2]/ul/li[3]')
+        junior_jobs = self.find_element(By.XPATH, '//*[contains(text(), "Młodszy specjalista (Junior)")]')
         junior_jobs.click()
 
     def accept_selection(self):

@@ -12,7 +12,12 @@ class JobOffer():
 
     def get_employer_name(self):
         employer_name = self.offer.find('h2', {'data-scroll-id': 'employer-name'}).get_text()
-        pattern = re.compile('O firmie')
+        text_firma = 'O firmie'
+        text_company = 'About the company'
+        if text_firma in employer_name:
+            pattern = re.compile(text_firma)
+        else:
+            pattern = re.compile(text_company)
         return pattern.split(employer_name)[0]
 
     def get_city(self):
@@ -20,9 +25,12 @@ class JobOffer():
         return city.split(', ')[0]
 
     def get_contract_type(self):
-        contract = self.offer.find(
-            'div', {'data-test': 'sections-benefit-contracts-text'}).get_text()
-        return contract.split(', ')
+        try:
+            contract = self.offer.find(
+                'div', {'data-test': 'sections-benefit-contracts-text'}).get_text()
+            return contract.split(', ')
+        except:
+            None
 
     def get_position_name(self):
         position = self.offer.find('div',
@@ -32,14 +40,19 @@ class JobOffer():
         return position.split(', ')
 
     def get_job_mode(self):
-        mode = self.offer.find('div',
-                               {'data-test': 'sections-benefit-work-modes-text'}).get_text()
-        return mode.split(', ')
+        try:
+            mode = self.offer.find('div',
+                                   {'data-test': 'sections-benefit-work-modes-text'}).get_text()
+            return mode.split(', ')
+        except:
+            None
 
     def get_rerutation_type(self):
-        recrutation = self.offer.find('div', {'data-test' : 'sections-benefit-remote-recruitment-text'}).get_text()
-        return recrutation.split(', ')
-
+        try:
+            recrutation = self.offer.find('div', {'data-test' : 'sections-benefit-remote-recruitment-text'}).get_text()
+            return recrutation.split(', ')
+        except:
+            None
     def get_technolofgies(self):
         try:
             technologies = self.offer.find('div', {'data-scroll-id': 'technologies-1'})
@@ -64,7 +77,6 @@ class JobOffer():
                 return [elem.get_text() for elem in req.find_all('p')]
             except:
                 None
-                return ['No information provided']
 
     def get_optionat_technologies(self):
         if self.no_technologies_provided():
@@ -73,12 +85,17 @@ class JobOffer():
                 return [elem.get_text() for elem in req.find_all('p')]
             except:
                 None
-                return ['No information provided']
 
     def get_responsibilities(self):
-        resp = self.offer.find('div', {'data-scroll-id': 'responsibilities-1'})
-        return [elem.get_text() for elem in resp.find_all('p')]
+        try:
+            resp = self.offer.find('div', {'data-scroll-id': 'responsibilities-1'})
+            return [elem.get_text() for elem in resp.find_all('p')]
+        except:
+            None
 
     def get_requirement(self):
-        req = self.offer.find('div', {'data-scroll-id': 'requirements-1'})
-        return [elem.get_text() for elem in req.find_all('p')]
+        try:
+            req = self.offer.find('div', {'data-scroll-id': 'requirements-1'})
+            return [elem.get_text() for elem in req.find_all('p')]
+        except:
+            None
