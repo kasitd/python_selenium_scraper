@@ -7,12 +7,14 @@ import itertools
 import os
 import json
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 import aiofiles
+import time
+import csv
 
 
 # przejdź przez stronę
-"""def get_all_links():
+def get_all_links():
     with Pracuj() as p:
         p.land_first_page()
         p.accept_cookies()
@@ -34,42 +36,35 @@ import aiofiles
             if type(link) == list:
                 for l in link:
                     temp.append(l)
-        #all_links = '\n'.join(temp)
         return temp
-print(get_all_links())"""
-
-links = ['https://www.pracuj.pl/praca/junior-it-specialist-warszawa,oferta,1001529849?sort=0&s=187b3cc0', 'https://www.pracuj.pl/praca/intern-in-account-payable-team-vba-warszawa,oferta,1001544282?sort=0&s=187b3cc0']
-link = 'https://www.pracuj.pl/praca/junior-it-specialist-warszawa,oferta,1001529849?sort=0&s=187b3cc0'
-
-# stwórz jeden zestaw danych w pamięci
 
 
-# asynchronicznie wyciągnij dane
+
 async def get_site_content(link, session):
     async with session.get(link) as resp:
-        text = await resp.read()
+        page_html = await resp.read()
 
-    soup = BeautifulSoup(text, 'html.parser')
-    offer = JobOffer(DataCollection().get_offer(soup))
+    strainer = DataCollection().strain_soup()
+    soup = DataCollection().make_soup(page_html)
+    site_content_list = await create_offer_list(soup)
+    return site_content_list
 
-    offer_dict = await create_offer_dict(offer)
-    return offer_dict
 
-
-async def create_offer_dict(offer):
-    offer_dict = {'job_title': offer.get_job_title(),
-                  'employer': offer.get_employer_name(),
-                  'city': offer.get_city(),
-                  'contract': offer.get_contract_type(),
-                  'position': offer.get_position_name(),
-                  'mode': offer.get_job_mode(),
-                  'recrutation': offer.get_rerutation_type(),
-                  'required_technologies': offer.get_required_technologies(),
-                  'optional_technologies': offer.get_optionat_technologies(),
-                  'responsibilities': offer.get_responsibilities(),
-                  'requirement': offer.get_requirement()
-                  }
-    return offer_dict
+async def create_offer_list(soup):
+    offer = JobOffer(soup)
+    offer_list = [offer.get_job_title(),
+                  offer.get_employer_name(),
+                  offer.get_city(),
+                  offer.get_contract_type(),
+                  offer.get_position_name(),
+                  offer.get_job_mode(),
+                  offer.get_rerutation_type(),
+                  offer.get_required_technologies(),
+                  offer.get_optionat_technologies(),
+                  offer.get_responsibilities(),
+                  offer.get_requirement()
+                  ]
+    return offer_list
 
 
 # asynchronicznie przejdż przez linki zbierając dane
@@ -81,15 +76,10 @@ async def get_all_site_content(links):
         async with aiohttp.ClientSession() as session:
             for link in links:
                 actions.append(asyncio.ensure_future(get_site_content(link, session)))
-
-
             offer_res = await asyncio.gather(*actions)
 
             for data in offer_res:
-
                 offer_data.append(data)
-        async with aiofiles.open("raw_data.txt", 'w+') as new_file:
-            await new_file.write(str(offer_data))
 
         return offer_data
 
@@ -97,23 +87,37 @@ async def get_all_site_content(links):
         print(f"An error ocurred: {err}")
 
 
+def write_into_csv_file(offer_list):
+    try:
+        with open('raw_data.csv', mode='w+', newline='', encoding='utf8') as raw_csv_file:
+            filds = ['Job_title',
+                     'Employer',
+                     'City',
+                     'Contract',
+                     'Position',
+                     'Mode',
+                     'Recrutation',
+                     'Required_technologies',
+                     'Optional_technologies',
+                     'Responsibilities',
+                     'Requirement']
+            file_writer = csv.writer(raw_csv_file)
+            file_writer.writerow(filds)
+            file_writer.writerows(offer_list)
+
+    except FileNotFoundError:
+        print("Output file not present", 'raw_data.csv')
+        print("Current dir: ", os.getcwd())
+        raise FileNotFoundError
 
 def main():
+    links = get_all_links()
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(get_all_site_content(links))
+    data_list = loop.run_until_complete(get_all_site_content(links))
+    write_into_csv_file(data_list)
+
 
 
 if __name__ == '__main__':
     main()
 
-
-
-
-"""
-# zapisz zestaw danych do pliku
-file1 = open("raw_data.txt", 'w+')
-file1.write()
-file1.write('/n')
-file1.close()
-
-"""

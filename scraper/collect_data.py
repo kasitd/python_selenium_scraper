@@ -9,15 +9,12 @@ class DataCollection:
     def __init__(self):
         pass
 
-    def make_request(self, link):
-        return requests.get(link)
+    def strain_soup(self):
+        return SoupStrainer('div', attrs={'data-test': 'section-offerView'})
 
-    def make_soup(self, page):
-        return BeautifulSoup(page.content, 'html.parser')
-
-    def get_offer(self, soup):
-        return soup.find('div', {'class': 'OfferViewgl652f'})
-
+    def make_soup(self, response):
+        strainer = self.strain_soup()
+        return BeautifulSoup(response, 'html.parser', parse_only=strainer)
     """def show_offer(self, offer):
         print(offer.prettify())"""
 
