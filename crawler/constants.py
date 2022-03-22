@@ -1,1 +1,1 @@
-BASE_URL = "https://pracuj.pl/praca/"
+BASE_URL = 'https://pracuj.pl/praca/'

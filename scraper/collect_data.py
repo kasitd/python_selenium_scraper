@@ -1,8 +1,5 @@
-import requests
 from bs4 import BeautifulSoup, SoupStrainer
-import re
 from crawler.pracuj_crawler import Pracuj
-import asyncio
 
 
 class DataCollection:

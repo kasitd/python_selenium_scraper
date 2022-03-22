@@ -11,32 +11,8 @@ from bs4 import BeautifulSoup, SoupStrainer
 import aiofiles
 import time
 import csv
-
-
-# przejdź przez stronę
-def get_all_links():
-    with Pracuj() as p:
-        p.land_first_page()
-        p.accept_cookies()
-        p.enter_keyword("python")
-        p.select_jobs_types()
-        p.select_hybrid_jobs()
-        p.select_remote_jobs()
-        p.select_job_levels()
-        p.select_junior_specialist_jobs()
-        p.accept_selection()
-        list2d = p.get_all_links()
-        flat_list = list(itertools.chain.from_iterable(list2d))
-        temp = []
-
-        # zbierz wszystkie linki
-        for link in list2d:
-            if type(link) == str:
-                temp.append(link)
-            if type(link) == list:
-                for l in link:
-                    temp.append(l)
-        return temp
+from datetime import date
+from selenium.webdriver.support import expected_conditions as EC
 
 
 
@@ -88,8 +64,9 @@ async def get_all_site_content(links):
 
 
 def write_into_csv_file(offer_list):
+    file_name = f'raw_data{date.today().strftime("%d_%m_%Y")}.csv'
     try:
-        with open('raw_data.csv', mode='w+', newline='', encoding='utf8') as raw_csv_file:
+        with open(file_name, mode='w+', newline='', encoding='utf8') as raw_csv_file:
             filds = ['Job_title',
                      'Employer',
                      'City',
@@ -111,10 +88,15 @@ def write_into_csv_file(offer_list):
         raise FileNotFoundError
 
 def main():
-    links = get_all_links()
-    loop = asyncio.get_event_loop()
-    data_list = loop.run_until_complete(get_all_site_content(links))
-    write_into_csv_file(data_list)
+    p = Pracuj()
+    p.land_first_page()
+    p.accept_cookies()
+    p.apply_filtrations('python')
+    inks = p.collect_links()
+    p.close_browser()
+    #loop = asyncio.get_event_loop()
+    #data_list = loop.run_until_complete(get_all_site_content(links))
+    #write_into_csv_file(data_list)
 
 
 

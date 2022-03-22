@@ -29,73 +29,79 @@ class JobOffer():
             contract = self.offer.find(
                 'div', {'data-test': 'sections-benefit-contracts-text'}).get_text()
             return contract.split(', ')
-        except:
-            None
+        except (AttributeError, KeyError) as er:
+            return None
 
     def get_position_name(self):
-        position = self.offer.find('div',
-                                   {'data-test':
-                                        'sections-benefit-employment-type-name-text'}).get_text()
+        try:
+            position = self.offer.find('div', {'data-test': 'sections-benefit-employment-type-name-text'}).get_text()
 
-        return position.split(', ')
+            return position.split(', ')
+        except (AttributeError, KeyError) as er:
+            return None
 
     def get_job_mode(self):
         try:
-            mode = self.offer.find('div',
-                                   {'data-test': 'sections-benefit-work-modes-text'}).get_text()
+            mode = self.offer.find(
+                'div', {'data-test': 'sections-benefit-work-modes-text'}
+            ).get_text()
             return mode.split(', ')
-        except:
-            None
+        except (AttributeError, KeyError) as er:
+            return None
 
     def get_rerutation_type(self):
         try:
-            recrutation = self.offer.find('div', {'data-test' : 'sections-benefit-remote-recruitment-text'}).get_text()
+            recrutation = self.offer.find(
+                'div', {'data-test': 'sections-benefit-remote-recruitment-text'}
+            ).get_text()
             return recrutation.split(', ')
-        except:
-            None
+        except (AttributeError, KeyError) as er:
+            return None
+
     def get_technolofgies(self):
         try:
-            technologies = self.offer.find('div', {'data-scroll-id': 'technologies-1'})
-        except:
-            None
-
-
-# może dobrze byłoby wydzielić oddzielną klasę
+            technologies = self.offer.find(
+                'div', {'data-scroll-id': 'technologies-1'})
+        except (AttributeError, KeyError) as er:
+            return None
 
     def no_technologies_provided(self):
         technologies = self.get_technolofgies()
-        if  technologies == None:
+        if technologies is None:
             return True
         else:
             return False
 
-
     def get_required_technologies(self):
         if self.no_technologies_provided():
             try:
-                req = self.offer.find('div', {'data-test': 'section-technologies-expected'})
+                req = self.offer.find(
+                    'div', {'data-test': 'section-technologies-expected'})
                 return [elem.get_text() for elem in req.find_all('p')]
-            except:
-                None
+            except (AttributeError, KeyError) as er:
+                return None
 
     def get_optionat_technologies(self):
         if self.no_technologies_provided():
             try:
-                req = self.offer.find('div', {'data-test': 'section-technologies-optional'})
+                req = self.offer.find(
+                    'div', {'data-test': 'section-technologies-optional'})
                 return [elem.get_text() for elem in req.find_all('p')]
-            except:
-                None
+            except (AttributeError, KeyError) as er:
+                return None
 
     def get_responsibilities(self):
         try:
-            resp = self.offer.find('div', {'data-scroll-id': 'responsibilities-1'})
+            resp = self.offer.find(
+                'div', {'data-scroll-id': 'responsibilities-1'})
             return [elem.get_text() for elem in resp.find_all('p')]
-        except:
-            None
+        except (AttributeError, KeyError) as er:
+            return None
 
     def get_requirement(self):
         try:
-            req = self.offer.find('div', {'data-scroll-id': 'requirements-1'})
+            req = self.offer.find(
+                'div', {'data-scroll-id': 'requirements-1'})
             return [elem.get_text() for elem in req.find_all('p')]
-        except:
-            None
+        except (AttributeError, KeyError) as er:
+            return None
