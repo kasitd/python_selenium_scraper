@@ -91,12 +91,23 @@ def main():
     p = Pracuj()
     p.land_first_page()
     p.accept_cookies()
+    p.accept_popup()
+
     p.apply_filtrations('python')
-    inks = p.collect_links()
-    p.close_browser()
-    #loop = asyncio.get_event_loop()
-    #data_list = loop.run_until_complete(get_all_site_content(links))
+    data = p.collect_page_source()
+    d = DataCollection(data)
+    pages = d.get_number_of_pages()
+    links = d.get_single_links_from_page()
+    links.extend(d.get_nested_links_from_page())
+    for n in range(int(pages)-1):
+        p.triger_next_page_button()
+        links.extend(d.get_single_links_from_page())
+        links.extend(d.get_nested_links_from_page())
+
+    loop = asyncio.get_event_loop()
+    data_list = loop.run_until_complete(get_all_site_content(links))
     #write_into_csv_file(data_list)
+    print(data_list)
 
 
 
