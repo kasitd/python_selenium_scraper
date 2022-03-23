@@ -22,6 +22,12 @@ class Filter:
         except (NoSuchElementException, TimeoutException):
             return False
 
+    def get_filter_wrapper(self):
+        try:
+            self.driver.find_element(By.CLASS_NAME, "filters-item")
+        except (NoSuchElementException, TimeoutException):
+            return False
+
     def select_jobs_types(self):
         try:
             work_form = self.driver.find_element(By.XPATH, '//*[contains(text(), "Tryb pracy")]')
