@@ -1,18 +1,6 @@
 import asyncio
 import aiohttp
-import itertools
-import os
-import json
-import requests
-from bs4 import BeautifulSoup
-import aiofiles
-import time
-import csv
-from datetime import date
-from selenium.webdriver.support import expected_conditions as EC
 from scraper.collect_data import DataCollection
-from scraper.search_result import JobOffer
-
 
 
 async def get_site_content(link, session):
@@ -44,27 +32,3 @@ async def get_all_site_content(links):
         print(f"An error ocurred: {err}")
 
 
-def write_into_csv_file(offer_list):
-    file_name = f'raw_data{date.today().strftime("%d_%m_%Y")}.csv'
-    try:
-        with open(file_name, mode='w+', newline='', encoding='utf8') as raw_csv_file:
-            filds = ['Job_title',
-                     'Employer',
-                     'City',
-                     'Contract',
-                     'Position',
-                     'Mode',
-                     'Recrutation',
-                     'Required_technologies',
-                     'Optional_technologies',
-                     'Responsibilities',
-                     'Requirement']
-            file_writer = csv.writer(raw_csv_file)
-            file_writer.writerow(filds)
-            print(offer_list)
-            #file_writer.writerows(offer_list)
-
-    except FileNotFoundError:
-        print("Output file not present", 'raw_data.csv')
-        print("Current dir: ", os.getcwd())
-        raise FileNotFoundError
